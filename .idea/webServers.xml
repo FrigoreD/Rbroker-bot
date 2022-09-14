@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="ab87a47b-18d8-4512-80de-3e0c693872c7" name="Rbroker-bot" url="http://31.31.196.4">
+        <fileTransfer rootFolder="/www/rbroker-bot.ru" host="31.31.196.4" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

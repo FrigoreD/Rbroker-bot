@@ -21,7 +21,9 @@ class TelegramUserController extends Controller
      */
     public function index(Request $request, Telegram $telegram){
         $message = $telegram->text($request);
-        //The logic is based on switch/case construction, depending on user's message
+        /**
+         * The logic is based on switch/case construction, depending on user's message
+         */
         switch ($message){
             case '/help':
                 $text = "Список полезных функций:\n/add datetime; name; phone - Добавление новой строки\n/del id - удаление строки\n/sel id - Вывести содержимое строки";
@@ -32,7 +34,7 @@ class TelegramUserController extends Controller
             case (bool)preg_match('/\/add\s(.*);\s(.*);\s(.*)/', $message, $res):
                 try{
                     //RGXs for incoming date
-                    if(!$phone = $this->nameMatch($res[2])){
+                    if(!$name = $this->nameMatch($res[2])){
                         $text = 'Неверно введено имя';
                         break;
                     }
@@ -44,10 +46,14 @@ class TelegramUserController extends Controller
                         $text = 'Неверно введена дата';
                         break;
                     }
-                    //creating new row in DB
-                    $this->newLine($date, $phone, $phone);
-                    $text = 'Добавлена запись: '. $res[1] . ' ' . $phone . ' ' . $phone;
-                    //we often use try/catch constructions to catch some exceptions
+                    /**
+                     * creating new row in DB
+                     */
+                    $this->newLine($date, $name, $phone);
+                    $text = 'Добавлена запись: '. $res[1] . ' ' . $name . ' ' . $phone;
+                    /**
+                     * we often use try/catch constructions to catch some exceptions
+                     */
                 }catch (\Throwable $e){
                         $text = 'Пользователь с таким номером телефона уже существует или неверно введена дата';
                 }
@@ -59,7 +65,9 @@ class TelegramUserController extends Controller
                 $id = $res[1];
                 try {
                     $data = $this->getEntryFromDb($id);
-                    //We can delete row like this thanks to model
+                    /**
+                     * We can delete row like this thanks to model
+                     */
                     TelegramUser::query()->find($id)->delete();
                     $text = 'Строка ' . $data . ' Была удалена';
                 }catch (\Throwable $e){
@@ -72,7 +80,9 @@ class TelegramUserController extends Controller
             case (bool)preg_match('/\/sel\s(.*)/', $message, $res):
                 $id = $res[1];
                 try{
-                    //method that can output date from db
+                    /**
+                     * method that can output date from db
+                     */
                     $text = $this->getEntryFromDb($id);
                 }catch (\Throwable $e){
                     $text = 'Строки с id: ' . $id . ' не существует';
@@ -152,7 +162,7 @@ class TelegramUserController extends Controller
      * @return false
      */
     protected function nameMatch($name){
-        $name_regex = "/^[a-z ,.'-]+$/";
+        $name_regex = "/^(([A-Za-zА-Яа-я]+[,.]?[ ]?|[a-z]+['-]?)+)$/";
         return preg_match($name_regex, $name) ? $name : false;
     }
 }

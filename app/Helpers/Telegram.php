@@ -4,6 +4,12 @@ namespace App\Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
+
+/**
+ * Our brains of all kinds of bots
+ * here some methods, that we use to send message,
+ * parse incoming requests and receive our text
+ */
 class Telegram{
     protected $http;
     protected $TOKEN;
@@ -12,6 +18,13 @@ class Telegram{
         $this->http = $http;
         $this->TOKEN = $TOKEN;
     }
+
+    /**
+     * send message to user by chat id
+     * @param $request
+     * @param $text
+     * @return void
+     */
     public function sendMessage($request, $text){
         $this->http::post(self::url.$this->TOKEN."/sendMessage", [
             'chat_id' => $this->chatId($request),
@@ -19,6 +32,12 @@ class Telegram{
             'parse_mode' => 'html',
         ]);
 }
+
+    /**
+     * parse chat id from request
+     * @param Request $request
+     * @return mixed
+     */
     protected function chatId(Request $request){
         try{
             $chat = $request->input('message')['chat'];
@@ -28,6 +47,11 @@ class Telegram{
         return $id = $chat['id'];
     }
 
+    /**
+     * parse text from request
+     * @param Request $request
+     * @return mixed
+     */
     public function text(Request $request) {
         try{
             return $request->input('message')['text'];
@@ -36,11 +60,4 @@ class Telegram{
         }
     }
 
-//    public function testSendMessage($chatId, $text){
-//        $this->http::post(self::url.$this->TOKEN."/sendMessage", [
-//            'chat_id' => $chatId,
-//            'text' => $text,
-//            'parse_mode' => 'html',
-//        ]);
-//    }
 }

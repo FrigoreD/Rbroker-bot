@@ -2,15 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
+
+
+/**Our main view to connect with telegram bot
+webhook can be set like this:
+//https://api.telegram.org/botYOUR_TOKEN/setwebhook?url=YOUR_HOST_URL/webhook
+don't forget to do it, otherwise nothing will work
+*/
 Route::post('/webhook', [\App\Http\Controllers\TelegramUserController::class, 'index']);

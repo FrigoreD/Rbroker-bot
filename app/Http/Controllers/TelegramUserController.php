@@ -13,6 +13,7 @@ use App\Models\TelegramUser;
  */
 class TelegramUserController extends Controller
 {
+
     /**
      * Our rbroker_bot that processes the user's message and gives a response based on this
      * @param Request $request
@@ -33,7 +34,9 @@ class TelegramUserController extends Controller
              */
             case (bool)preg_match('/\/add\s(.*);\s(.*);\s(.*)/', $message, $res):
                 try{
-                    //RGXs for incoming date
+                    /**
+                     * RGXs for incoming date
+                     */
                     if(!$name = $this->nameMatch($res[2])){
                         $text = 'Неверно введено имя';
                         break;
@@ -50,7 +53,7 @@ class TelegramUserController extends Controller
                      * creating new row in DB
                      */
                     $this->newLine($date, $name, $phone);
-                    $text = 'Добавлена запись: '. $res[1] . ' ' . $name . ' ' . $phone;
+                    $text = 'Добавлена запись '. $this->getLastId() . ': ' . $res[1] . '; ' . $name . '; ' . $phone;
                     /**
                      * we often use try/catch constructions to catch some exceptions
                      */
@@ -165,4 +168,10 @@ class TelegramUserController extends Controller
         $name_regex = "/^(([A-Za-zА-Яа-я]+[,.]?[ ]?|[a-z]+['-]?)+)$/";
         return preg_match($name_regex, $name) ? $name : false;
     }
+
+    protected function getLastId(){
+        $data =  TelegramUser::query()->latest('id')->first();
+        return $id = $data['id'];
+    }
 }
+

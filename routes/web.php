@@ -11,3 +11,4 @@ webhook can be set like this:
 don't forget to do it, otherwise nothing will work
 */
 Route::post('/webhook', [\App\Http\Controllers\TelegramUserController::class, 'index']);
+//Route::get('/', [\App\Http\Controllers\TelegramUserController::class, 'test']);

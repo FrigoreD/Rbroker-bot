@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TelegramUserController;
 
 
 
@@ -10,5 +11,4 @@ webhook can be set like this:
 //https://api.telegram.org/botYOUR_TOKEN/setwebhook?url=YOUR_HOST_URL/webhook
 don't forget to do it, otherwise nothing will work
 */
-Route::post('/webhook', [\App\Http\Controllers\TelegramUserController::class, 'index']);
-//Route::get('/', [\App\Http\Controllers\TelegramUserController::class, 'test']);
+Route::post('/webhook', [TelegramUserController::class, 'index'])->name('TelegramBot');

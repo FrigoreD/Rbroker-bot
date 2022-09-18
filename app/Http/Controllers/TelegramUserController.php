@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Telegram;
+use App\Models\TelegramUser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\TelegramUser;
 
 
 /**
@@ -20,7 +20,7 @@ class TelegramUserController extends Controller
      * @param Telegram $telegram
      * @return void
      */
-    public function index(Request $request, Telegram $telegram){
+    public function index(Request $request, Telegram $telegram): void{
         $message = $telegram->text($request);
         /**
          * The logic is based on switch/case construction, depending on user's message
@@ -96,39 +96,23 @@ class TelegramUserController extends Controller
         }
         $telegram->sendMessage($request, $text);
     }
-
-    /**
-     * simple regex that helps user to print date like Y-m-d or d m y and e.t.c to UNIX TIMESTAMP
-     * @param $date
-     * @return float|int|string|void
-     */
-    protected function setDate($date){
-        $formats = ['Y-m-d','d-m-Y', 'Y/m/d', 'd/m/Y', 'Y m d', 'd m Y', 'd.m.Y', 'Y.m.d'];
-        foreach ($formats as $format) {
-            try{
-               return Carbon::createFromFormat($format, $date) -> timestamp;
-            } catch (\Throwable $e) {
-            }
-        }
-    }
-
     /**
      * print date in that way: d.m.y h:m from UNIX TIMESTAMP
-     * @param $date
+     * @param int $date
      * @return string
      */
-    protected function getDate($date){
+    public function getDate(int $date): string{
         return Carbon::createFromTimestamp($date)->format('d.m.y h:m');
     }
 
     /**
      * add new data to DB
-     * @param $datetime
-     * @param $name
-     * @param $phone
+     * @param string $datetime
+     * @param string $name
+     * @param string $phone
      * @return void
      */
-    protected function newLine($datetime, $name, $phone){
+    public function newLine(string $datetime, string $name, string $phone): void{
         $addInTable = new TelegramUser;
         $addInTable->datetime = $datetime;
         $addInTable->name = $name;
@@ -138,40 +122,55 @@ class TelegramUserController extends Controller
 
     /**
      * Get date from DB
-     * @param $id
+     * @param int $id
      * @return string
      */
-    protected function getEntryFromDb($id): string
+    public function getEntryFromDb(int $id): string
     {
-       $res = implode( ' ', json_decode(json_encode(TelegramUser::query()->find($id), true),true));
-       $array = explode(' ', $res);
-       $array[1] = $this->getDate($array[1]);
-       return implode( '; ', $array);
+        $res = implode( ' ', json_decode(json_encode(TelegramUser::query()->find($id), true),true));
+        $array = explode(' ', $res);
+        $array[1] = $this->getDate($array[1]);
+        return implode( '; ', $array);
     }
 
     /**
-     * Regex phone
-     * @param $phone
-     * @return false
+     * @param string $phone
+     * @return bool
      */
-    protected function phoneMatch($phone){
+    public function phoneMatch(string $phone){
         $phone_regex = '/^\+?[78][-\(]?\d{3}\)?-?\d{3}-?\d{2}-?\d{2}$/';
         return preg_match($phone_regex, $phone) ? $phone : false;
     }
 
     /**
-     * Regex name
-     * @param $name
-     * @return false
+     * @param string $name
+     * @return false|string
      */
-    protected function nameMatch($name){
+    public function nameMatch(string $name)
+    {
         $name_regex = "/^(([A-Za-zА-Яа-я]+[,.]?[ ]?|[a-z]+['-]?)+)$/";
         return preg_match($name_regex, $name) ? $name : false;
     }
 
-    protected function getLastId(){
+    /**
+     * @return int
+     */
+    public function getLastId(): int {
         $data =  TelegramUser::query()->latest('id')->first();
         return $id = $data['id'];
+    }
+
+    /**
+     * @param $date
+     * @return float|int|string|void
+     */
+    public function setDate($date){
+        $formats = ['Y-m-d','d-m-Y', 'Y/m/d', 'd/m/Y', 'Y m d', 'd m Y', 'd.m.Y', 'Y.m.d'];
+        foreach ($formats as $format) {
+            try{
+                return Carbon::createFromFormat($format, $date) -> timestamp;
+            } catch (\Throwable $e){}
+        }
     }
 }
 

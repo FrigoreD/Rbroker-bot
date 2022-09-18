@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Http;
  * parse incoming requests and receive our text
  */
 class Telegram{
-    protected $http;
-    protected $TOKEN;
+    protected Http $http;
+    protected string $TOKEN;
     const url = 'https://api.telegram.org/bot';
     public function __construct(Http $http, $TOKEN){
         $this->http = $http;
@@ -25,7 +25,7 @@ class Telegram{
      * @param $text
      * @return void
      */
-    public function sendMessage($request, $text){
+    public function sendMessage($request, $text): void{
         $this->http::post(self::url.$this->TOKEN."/sendMessage", [
             'chat_id' => $this->chatId($request),
             'text' => $text,
@@ -36,9 +36,9 @@ class Telegram{
     /**
      * parse chat id from request
      * @param Request $request
-     * @return mixed
+     * @return int
      */
-    protected function chatId(Request $request){
+    protected function chatId(Request $request): mixed{
         try{
             $chat = $request->input('message')['chat'];
         }catch (\Throwable $e){
@@ -52,7 +52,7 @@ class Telegram{
      * @param Request $request
      * @return mixed
      */
-    public function text(Request $request) {
+    public function text(Request $request): mixed{
         try{
             return $request->input('message')['text'];
         }catch (\Throwable $e){
